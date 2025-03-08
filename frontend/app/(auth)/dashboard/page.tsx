@@ -61,7 +61,7 @@ export default function Dashboard() {
     };
 
     loadTable();
-  }, [tableId]);
+  }, [tableId, setTableName, setColumns, setRows]);
 
   const handleSave = async () => {
     try {
@@ -73,8 +73,12 @@ export default function Dashboard() {
       setNewColumn({ name: "", type: "text" });
       // Show success message
       toast.success('Table saved successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to save table. Please try again.');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || 'Failed to save table. Please try again.');
+      } else {
+        toast.error('An unknown error occurred. Please try again.');
+      }
     }
   };
 
@@ -85,8 +89,12 @@ export default function Dashboard() {
         setColumns(importedTable.columns);
         setRows(importedTable.rows);
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to import from Google Sheets');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || 'Failed to import from google sheets.');
+      } else {
+        toast.error('An unknown error occurred. Please try again.');
+      }
     }
   };
 

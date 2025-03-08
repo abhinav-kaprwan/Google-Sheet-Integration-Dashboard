@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AxiosError } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,9 +28,13 @@ export const saveTable = async (tableName: string, columns: { name: string; type
             return response.data;
         }
         throw new Error("Failed to save table");
-    } catch (error: any) {
-        const message = error.response?.data?.message || error.message || "Failed to save table";
-        throw new Error(message);
+    } catch (error: unknown) { 
+        if (error instanceof Error) {
+            const message = (error as any).response?.data?.message || error.message || "Failed to save table";
+            throw new Error(message);
+        } else {
+            throw new Error("An unknown error occurred");
+        }
     }
   };
 
@@ -40,10 +45,17 @@ export const deleteTable = async (tableId: string) => {
             return response.data;
         }
         throw new Error("Failed to delete table");
-    } catch (error: any) {
-        const message = error.response?.data?.message || error.message || "Failed to delete table";
+    } catch (error: unknown) {  
+        let message = "Failed to delete table";  
+    
+        if (error instanceof AxiosError) {
+            message = error.response?.data?.message || error.message || message;
+        } else if (error instanceof Error) {
+            message = error.message;
+        }
         throw new Error(message);
     }
+    
 };
 
 export const getTable = async (tableId: string) => {
@@ -53,8 +65,15 @@ export const getTable = async (tableId: string) => {
             return response.data;
         }
         throw new Error("Failed to fetch table");
-    } catch (error: any) {
-        const message = error.response?.data?.message || error.message || "Failed to fetch table";
+    } catch (error: unknown) {  
+        let message = "Failed to fetch table";  
+    
+        if (error instanceof AxiosError) {
+            message = error.response?.data?.message || error.message || message;
+        } else if (error instanceof Error) {
+            message = error.message;
+        }
+    
         throw new Error(message);
     }
 };

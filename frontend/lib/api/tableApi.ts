@@ -30,7 +30,8 @@ export const saveTable = async (tableName: string, columns: { name: string; type
         throw new Error("Failed to save table");
     } catch (error: unknown) { 
         if (error instanceof Error) {
-            const message = (error as any).response?.data?.message || error.message || "Failed to save table";
+            const axiosError = error as { response?: { data?: { message?: string } } };
+            const message = axiosError.response?.data?.message || error.message || "Failed to save table";
             throw new Error(message);
         } else {
             throw new Error("An unknown error occurred");
